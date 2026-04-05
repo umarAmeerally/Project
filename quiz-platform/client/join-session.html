@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Join Session</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Join Quiz Session</h1>
+
+    <form id="joinForm">
+      <label for="accessCode">Session Code</label>
+      <input type="text" id="accessCode" placeholder="Enter session code" required />
+
+      <label for="nickname">Nickname</label>
+      <input type="text" id="nickname" placeholder="Enter your nickname" required />
+
+      <button type="submit">Join Session</button>
+    </form>
+
+    <div id="message"></div>
+  </div>
+
+  <script src="join-session.js"></script>
+</body>
+</html>

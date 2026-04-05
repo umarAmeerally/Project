@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Quiz</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Create Quiz</h1>
+
+    <form id="quizForm">
+      <label for="title">Quiz Title</label>
+      <input type="text" id="title" placeholder="Enter quiz title" required />
+
+      <div id="questionsContainer"></div>
+
+      <button type="button" id="addQuestionBtn">Add Question</button>
+      <button type="submit">Save Quiz</button>
+    </form>
+
+    <div id="message"></div>
+  </div>
+  <script src="guards.js"></script>
+<script>
+  requireLecturerLogin();
+</script>
+<script src="create-quiz.js"></script>
+
+  <script src="create-quiz.js"></script>
+</body>
+</html>

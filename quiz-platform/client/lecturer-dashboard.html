@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lecturer Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Lecturer Dashboard</h1>
+
+    <div class="menu-buttons">
+      <button onclick="window.location.href='create-quiz.html'">Create Quiz</button>
+      <button onclick="window.location.href='start-session.html'">Start Session</button>
+      <button onclick="window.location.href='lecturer-results.html'">View Results</button>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <script>
+    if (localStorage.getItem("lecturerLoggedIn") !== "true") {
+      window.location.href = "lecturer-login.html";
+    }
+
+    function logout() {
+      localStorage.removeItem("lecturerLoggedIn");
+      window.location.href = "lecturer-login.html";
+    }
+  </script>
+
+  <script src="guards.js"></script>
+<script>
+  requireLecturerLogin();
+
+  function logout() {
+    localStorage.removeItem("lecturerLoggedIn");
+    localStorage.removeItem("lecturerName");
+    localStorage.removeItem("lecturerEmail");
+    localStorage.removeItem("lecturerAccessCode");
+    window.location.href = "lecturer-login.html";
+  }
+</script>
+</body>
+</html>

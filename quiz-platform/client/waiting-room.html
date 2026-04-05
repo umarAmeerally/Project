@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Waiting Room</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Waiting Room</h1>
+    <p id="sessionText"></p>
+    <p id="nicknameText"></p>
+    <p>Waiting for lecturer to start the game...</p>
+
+    <div id="statusMessage"></div>
+  </div>
+
+  <script src="guards.js"></script>
+<script>
+  requireStudentSession();
+</script>
+<script src="waiting-room.js"></script>
+</body>
+</html>

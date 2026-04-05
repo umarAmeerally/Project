@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Live Lobby</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Live Lobby</h1>
+
+    <p id="accessCodeText"></p>
+    <h2>Players Joined</h2>
+    <ul id="participantsList"></ul>
+
+    <button id="startGameBtn">Start Game</button>
+    <button id="endGameBtn">End Session</button>
+    <div id="message"></div>
+  </div>
+
+  <script src="guards.js"></script>
+<script>
+  requireLecturerLogin();
+</script>
+<script src="live-lobby.js"></script>
+
+  <script src="live-lobby.js"></script>
+</body>
+</html>

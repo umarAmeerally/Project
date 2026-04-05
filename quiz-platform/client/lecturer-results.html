@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lecturer Results</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Session Results</h1>
+
+    <p id="sessionCodeText"></p>
+    <p id="summaryText"></p>
+
+    <h2>Participant Scores</h2>
+    <ul id="resultsList"></ul>
+
+    <button onclick="goBackToDashboard()">Back to Dashboard</button>
+  </div>
+
+  <script src="guards.js"></script>
+<script>
+  requireLecturerLogin();
+</script>
+<script src="lecturer-results.js"></script>
+</body>
+</html>
