@@ -2,6 +2,7 @@ const quizSelect = document.getElementById("quizSelect");
 const startSessionBtn = document.getElementById("startSessionBtn");
 const sessionInfo = document.getElementById("sessionInfo");
 
+
 async function loadQuizzes() {
   try {
     const response = await fetch("/api/quizzes");
@@ -22,24 +23,25 @@ async function loadQuizzes() {
 
 startSessionBtn.addEventListener("click", async () => {
   const quizId = quizSelect.value;
+  const gameMode = document.getElementById("gameMode").value;
 
   try {
     const response = await fetch("/api/sessions/start", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ quizId })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ quizId, gameMode })
     });
 
     const data = await response.json();
 
     if (response.ok) {
-      localStorage.setItem("lecturerAccessCode", data.accessCode);
+      const accessCode = data.session.accessCode;
+
+      localStorage.setItem("lecturerAccessCode", accessCode);
 
       sessionInfo.innerHTML = `
-        <p><strong>Session started successfully!</strong></p>
-        <p>Access Code: <strong>${data.accessCode}</strong></p>
+        Session started successfully!<br><br>
+        Access Code: ${accessCode}<br><br>
         <button onclick="goToLobby()">Go to Live Lobby</button>
       `;
     } else {

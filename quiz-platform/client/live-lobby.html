@@ -11,20 +11,45 @@
     <h1>Live Lobby</h1>
 
     <p id="accessCodeText"></p>
+
     <h2>Players Joined</h2>
     <ul id="participantsList"></ul>
 
-    <button id="startGameBtn">Start Game</button>
+    <div id="classicControls">
+      <button id="startGameBtn">Start Game</button>
+    </div>
+
+    <div id="battleControls">
+      <button id="startBattleBtn">Start Battle Royale</button>
+      <button id="nextRoundBtn">Next Round</button>
+    </div>
+
     <button id="endGameBtn">End Session</button>
+
     <div id="message"></div>
+
+    <div id="battleInfo">
+      <h2>Battle Royale Monitor</h2>
+
+      <p id="battleRoundText"></p>
+      <p id="battlePhaseText"></p>
+      <p id="nextRoundCountdownText"></p>
+
+      <h3>Current Duels</h3>
+      <div id="duelsContainer"></div>
+
+      <h3>Eliminated Players</h3>
+      <ul id="eliminatedList"></ul>
+
+      <h3>Winner</h3>
+      <p id="battleWinnerText"></p>
+    </div>
   </div>
 
   <script src="guards.js"></script>
-<script>
-  requireLecturerLogin();
-</script>
-<script src="live-lobby.js"></script>
-
+  <script>
+    requireLecturerLogin();
+  </script>
   <script src="live-lobby.js"></script>
 </body>
 </html>
