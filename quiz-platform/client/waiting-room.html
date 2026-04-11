@@ -5,21 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Waiting Room</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="css/ui-theme.css" />
+  <link rel="stylesheet" href="css/waiting-room.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>Waiting Room</h1>
-    <p id="sessionText"></p>
-    <p id="nicknameText"></p>
-    <p>Waiting for lecturer to start the game...</p>
+  <main class="waiting-room-page">
+    <div class="waiting-shell">
+      <section class="page-card center-card">
+        <p class="section-eyebrow">Waiting Room</p>
+        <h1>Waiting for Session Start</h1>
 
-    <div id="statusMessage"></div>
-  </div>
+        <p class="big-code" id="sessionCodeText">----</p>
 
-  <script src="guards.js"></script>
-<script>
-  requireStudentSession();
-</script>
-<script src="waiting-room.js"></script>
+        <p class="status-text">
+          <span class="pulse-dot"></span>
+          Waiting for lecturer to start the game...
+        </p>
+
+        <p class="info-row">
+          You joined as <span id="nicknameText" class="player-name">----</span>
+        </p>
+      </section>
+
+      <section class="page-card">
+        <div class="section-heading">
+          <h2>Players Joined</h2>
+        </div>
+
+        <ul id="participantsList" class="players-list"></ul>
+        <p id="participantsEmptyText" class="info-row">No players yet.</p>
+      </section>
+    </div>
+  </main>
+
+  <script src="waiting-room.js"></script>
 </body>
 </html>

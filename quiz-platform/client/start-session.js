@@ -1,59 +1,81 @@
 const quizSelect = document.getElementById("quizSelect");
-const startSessionBtn = document.getElementById("startSessionBtn");
-const sessionInfo = document.getElementById("sessionInfo");
+const gameModeSelect = document.getElementById("gameMode");
+const startSessionForm = document.getElementById("startSessionForm");
+const messageDiv = document.getElementById("message");
 
+function setMessage(text, type = "") {
+  messageDiv.textContent = text;
+  messageDiv.className = type ? `status-message ${type}` : "status-message";
+}
 
 async function loadQuizzes() {
   try {
-    const response = await fetch("/api/quizzes");
+    const response = await fetch("http://localhost:5000/api/quizzes");
     const quizzes = await response.json();
 
-    quizSelect.innerHTML = "";
+    if (!response.ok) {
+      setMessage("Could not load quizzes.", "error");
+      quizSelect.innerHTML = `<option value="">No quizzes available</option>`;
+      return;
+    }
 
-    quizzes.forEach(quiz => {
+    quizSelect.innerHTML = `<option value="">Select a quiz</option>`;
+
+    if (!Array.isArray(quizzes) || quizzes.length === 0) {
+      quizSelect.innerHTML = `<option value="">No quizzes found</option>`;
+      return;
+    }
+
+    quizzes.forEach((quiz) => {
       const option = document.createElement("option");
       option.value = quiz._id;
       option.textContent = quiz.title;
       quizSelect.appendChild(option);
     });
   } catch (error) {
-    console.error("Failed to load quizzes:", error);
+    console.error("Load quizzes error:", error);
+    setMessage("Server error while loading quizzes.", "error");
+    quizSelect.innerHTML = `<option value="">No quizzes available</option>`;
   }
 }
 
-startSessionBtn.addEventListener("click", async () => {
+startSessionForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
   const quizId = quizSelect.value;
-  const gameMode = document.getElementById("gameMode").value;
+  const gameMode = gameModeSelect.value;
+
+  if (!quizId) {
+    setMessage("Please select a quiz first.", "error");
+    return;
+  }
 
   try {
     const response = await fetch("/api/sessions/start", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({ quizId, gameMode })
     });
 
     const data = await response.json();
 
-    if (response.ok) {
-      const accessCode = data.session.accessCode;
-
-      localStorage.setItem("lecturerAccessCode", accessCode);
-
-      sessionInfo.innerHTML = `
-        Session started successfully!<br><br>
-        Access Code: ${accessCode}<br><br>
-        <button onclick="goToLobby()">Go to Live Lobby</button>
-      `;
-    } else {
-      sessionInfo.textContent = data.message || "Failed to start session.";
+    if (!response.ok) {
+      setMessage(data.message || "Could not create session.", "error");
+      return;
     }
+
+    localStorage.setItem("lecturerAccessCode", data.session.accessCode);
+    setMessage("Session created successfully. Redirecting to live lobby...", "success");
+
+    setTimeout(() => {
+      window.location.href = "live-lobby.html";
+    }, 700);
   } catch (error) {
-    console.error("Error starting session:", error);
+    console.error("Start session error:", error);
+    setMessage("Server error while creating session.", "error");
   }
 });
-
-function goToLobby() {
-  window.location.href = "live-lobby.html";
-}
 
 loadQuizzes();

@@ -5,29 +5,124 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Create Quiz</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="css/ui-theme.css" />
+  <link rel="stylesheet" href="css/create-quiz.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>Create Quiz</h1>
+  <main class="page-shell create-quiz-page">
+    <section class="page-hero">
+      <div>
+        <p class="section-eyebrow">Quiz Builder</p>
+        <h1>Create Quiz</h1>
+        <p class="page-subtitle">
+          Build questions manually or generate them with AI, then review and insert them into the same quiz before saving.
+        </p>
+      </div>
 
-    <form id="quizForm">
-      <label for="title">Quiz Title</label>
-      <input type="text" id="title" placeholder="Enter quiz title" required />
+      <div class="page-pills">
+        <div class="info-pill">Lecturer Tool</div>
+        <div class="info-pill">AI Assisted</div>
+      </div>
+    </section>
 
-      <div id="questionsContainer"></div>
+    <div class="page-grid">
+      <section class="page-card">
+        <div class="section-heading">
+          <h2>AI Question Assistant</h2>
+        </div>
+        <p class="helper-text">
+          Paste lecture notes, topic summaries, or teaching content. The generated questions can be reviewed before being added to the quiz form.
+        </p>
 
-      <button type="button" id="addQuestionBtn">Add Question</button>
-      <button type="submit">Save Quiz</button>
-    </form>
+        <div class="form-stack">
+          <div class="form-row">
+            <label for="topic">Topic</label>
+            <input type="text" id="topic" placeholder="e.g. Machine Learning Basics" />
+          </div>
 
-    <div id="message"></div>
-  </div>
+          <div class="form-row">
+            <label for="difficulty">Difficulty</label>
+            <select id="difficulty">
+              <option value="easy">Easy</option>
+              <option value="medium" selected>Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label for="numberOfQuestions">Number of Questions</label>
+            <select id="numberOfQuestions">
+              <option value="3">3</option>
+              <option value="5" selected>5</option>
+              <option value="8">8</option>
+              <option value="10">10</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label for="lectureText">Lecture Text / Notes</label>
+            <textarea
+              id="lectureText"
+              placeholder="Paste lecture notes, slide text, concepts, definitions, or module content here..."
+            ></textarea>
+          </div>
+
+          <div class="action-row">
+            <button id="generateBtn" class="primary-btn" type="button">Generate Questions</button>
+            <button id="clearAiBtn" class="secondary-btn" type="button">Clear AI Inputs</button>
+          </div>
+
+          <div id="aiMessage" class="status-message" aria-live="polite"></div>
+        </div>
+
+        <hr />
+
+        <div class="section-heading">
+          <h2>Generated Preview</h2>
+        </div>
+
+        <div id="generatedResults" class="question-list">
+          <p class="helper-text">No generated questions yet.</p>
+        </div>
+
+        <div class="generated-actions">
+          <button id="appendGeneratedBtn" class="primary-btn" type="button" disabled>Append to Quiz</button>
+          <button id="replaceGeneratedBtn" class="danger-btn" type="button" disabled>Replace Quiz Questions</button>
+          <button id="clearGeneratedBtn" class="secondary-btn" type="button" disabled>Clear Preview</button>
+        </div>
+      </section>
+
+      <section class="page-card">
+        <div class="section-heading">
+          <h2>Manual Quiz Builder</h2>
+        </div>
+        <p class="helper-text">
+          You can still build the quiz manually as before. AI-generated questions are inserted into this same form.
+        </p>
+
+        <form id="quizForm" class="form-stack">
+          <div class="form-row">
+            <label for="title">Quiz Title</label>
+            <input type="text" id="title" placeholder="Enter quiz title" required />
+          </div>
+
+          <div id="questionsContainer" class="question-list"></div>
+
+          <div class="quiz-actions">
+            <button type="button" id="addQuestionBtn" class="secondary-btn">Add Question</button>
+            <button type="submit" class="primary-btn">Save Quiz</button>
+          </div>
+        </form>
+
+        <div id="message" class="status-message" aria-live="polite"></div>
+      </section>
+    </div>
+  </main>
+
   <script src="guards.js"></script>
-<script>
-  requireLecturerLogin();
-</script>
-<script src="create-quiz.js"></script>
-
+  <script>
+    requireLecturerLogin();
+  </script>
   <script src="create-quiz.js"></script>
 </body>
 </html>

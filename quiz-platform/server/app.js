@@ -6,6 +6,7 @@ require("dotenv").config({ path: __dirname + "/.env" });
 const quizRoutes = require("./routes/quizRoutes");
 const sessionRoutes = require("./routes/sessionRoutes");
 const authRoutes = require("./routes/authRoutes");
+const aiRoutes = require("./routes/aiRoutes");
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use(express.static(path.join(__dirname, "../client")));
 app.use("/api/quizzes", quizRoutes);
 app.use("/api/sessions", sessionRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/ai", aiRoutes);
 
 mongoose
   .connect(process.env.MONGO_URI)

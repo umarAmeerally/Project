@@ -5,46 +5,71 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Live Lobby</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="css/ui-theme.css" />
+  <link rel="stylesheet" href="css/live-lobby.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>Live Lobby</h1>
+  <main class="page-shell live-lobby-page">
+    <section class="page-hero">
+      <div>
+        <p class="section-eyebrow">Lecturer Control</p>
+        <h1>Live Lobby</h1>
+        <p class="page-subtitle">Wait for students to join, then launch the selected game mode.</p>
+      </div>
 
-    <p id="accessCodeText"></p>
+      <div class="page-pills">
+        <div id="accessCodeText" class="info-pill">Session Code: ----</div>
+        <div id="gameModeText" class="info-pill">Mode: ----</div>
+      </div>
+    </section>
 
-    <h2>Players Joined</h2>
-    <ul id="participantsList"></ul>
+    <section class="page-card">
+      <div class="section-heading">
+        <h2>Players Joined</h2>
+      </div>
+      <ul id="participantsList" class="participants-list"></ul>
+    </section>
 
-    <div id="classicControls">
-      <button id="startGameBtn">Start Game</button>
-    </div>
+    <section id="classicLobbySection" class="page-card mode-section" hidden>
+      <div class="section-heading">
+        <h2>Classic Mode</h2>
+      </div>
+      <p class="section-note">Start the classic quiz when all students are ready.</p>
+      <div class="action-row">
+        <button id="startGameBtn" class="primary-btn">Start Game</button>
+      </div>
+    </section>
 
-    <div id="battleControls">
-      <button id="startBattleBtn">Start Battle Royale</button>
-      <button id="nextRoundBtn">Next Round</button>
-    </div>
+    <section id="battleRoyaleLobbySection" class="page-card mode-section" hidden>
+      <div class="section-heading">
+        <h2>Battle Royale Mode</h2>
+      </div>
+      <p class="section-note">Launch Battle Royale once enough players have joined.</p>
+      <div class="action-row">
+        <button id="startBattleBtn" class="primary-btn">Start Battle Royale</button>
+      </div>
+    </section>
 
-    <button id="endGameBtn">End Session</button>
+    <section id="tacticalDuelLobbySection" class="page-card mode-section" hidden>
+      <div class="section-heading">
+        <h2>Tactical Duel Mode</h2>
+      </div>
+      <p class="section-note">Tactical Duel MVP requires exactly 2 active participants.</p>
+      <div class="action-row">
+        <button id="startTacticalDuelBtn" class="primary-btn">Start Tactical Duel</button>
+      </div>
+    </section>
 
-    <div id="message"></div>
-
-    <div id="battleInfo">
-      <h2>Battle Royale Monitor</h2>
-
-      <p id="battleRoundText"></p>
-      <p id="battlePhaseText"></p>
-      <p id="nextRoundCountdownText"></p>
-
-      <h3>Current Duels</h3>
-      <div id="duelsContainer"></div>
-
-      <h3>Eliminated Players</h3>
-      <ul id="eliminatedList"></ul>
-
-      <h3>Winner</h3>
-      <p id="battleWinnerText"></p>
-    </div>
-  </div>
+    <section class="page-card">
+      <div class="section-heading">
+        <h2>Session Actions</h2>
+      </div>
+      <div class="action-row">
+        <button id="endGameBtn" class="danger-btn">End Session</button>
+      </div>
+      <div id="message" class="status-message" aria-live="polite"></div>
+    </section>
+  </main>
 
   <script src="guards.js"></script>
   <script>

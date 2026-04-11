@@ -5,33 +5,89 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Start Session</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="css/ui-theme.css" />
+  <link rel="stylesheet" href="css/start-session.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>Start Quiz Session</h1>
+  <main class="page-shell start-session-page">
+    <section class="page-hero">
+      <div>
+        <p class="section-eyebrow">Session Launch</p>
+        <h1>Start a Quiz Session</h1>
+        <p class="page-subtitle">
+          Choose a quiz, select the game mode, and create a live session for students to join.
+        </p>
+      </div>
 
-    <label for="quizSelect">Select Quiz</label>
-    <select id="quizSelect"></select>
+      <div class="page-pills">
+        <div class="info-pill">Lecturer Control</div>
+        <div class="info-pill">Session Setup</div>
+      </div>
+    </section>
 
-        <label for="gameMode">Game Mode:</label>
-    <select id="gameMode">
-      <option value="classic">Classic</option>
-      <option value="battleRoyale">Battle Royale</option>
-    </select>
-    <br><br>
-    
+    <div class="form-grid">
+      <section class="page-card">
+        <div class="section-heading">
+          <h2>Session Configuration</h2>
+        </div>
+        <p class="helper-text">
+          After creating the session, you will be taken to the live lobby where students can join before launch.
+        </p>
 
-    <button id="startSessionBtn">Start Session</button>
+        <form id="startSessionForm" class="form-stack">
+          <div class="form-row">
+            <label for="quizSelect">Select Quiz</label>
+            <select id="quizSelect" required>
+              <option value="">Loading quizzes...</option>
+            </select>
+          </div>
 
-    <div id="sessionInfo"></div>
-  </div>
+          <div class="form-row">
+            <label for="gameMode">Game Mode</label>
+            <select id="gameMode" required>
+              <option value="classic">Classic</option>
+              <option value="battleRoyale">Battle Royale</option>
+              <option value="tacticalDuel">Tactical Duel</option>
+            </select>
+          </div>
+
+          <div class="action-row">
+            <button type="submit" class="primary-btn">Create Session</button>
+          </div>
+        </form>
+
+        <div id="message" class="status-message" aria-live="polite"></div>
+      </section>
+
+      <section class="page-card">
+        <div class="section-heading">
+          <h2>Mode Overview</h2>
+        </div>
+
+        <ul class="mode-list">
+          <li class="mode-card">
+            <h3>Classic</h3>
+            <p>Students answer the quiz in the normal format and receive their results at the end.</p>
+          </li>
+
+          <li class="mode-card">
+            <h3>Battle Royale</h3>
+            <p>Students are paired into duels across rounds until one winner remains.</p>
+          </li>
+
+          <li class="mode-card">
+            <h3>Tactical Duel</h3>
+            <p>A 2-player tactical mode with actions, HP, question-driven moves, and live monitoring.</p>
+          </li>
+        </ul>
+      </section>
+    </div>
+  </main>
 
   <script src="guards.js"></script>
-<script>
-  requireLecturerLogin();
-</script>
-<script src="create-quiz.js"></script>
-
+  <script>
+    requireLecturerLogin();
+  </script>
   <script src="start-session.js"></script>
 </body>
 </html>

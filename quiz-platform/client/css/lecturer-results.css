@@ -1,0 +1,7 @@
+.lecturer-results-page .page-card {
+  overflow: hidden;
+}
+
+.lecturer-results-page .page-subtitle {
+  max-width: 680px;
+}

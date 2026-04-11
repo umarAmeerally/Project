@@ -5,41 +5,114 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Lecturer Dashboard</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="css/ui-theme.css" />
+  <link rel="stylesheet" href="css/lecturer-dashboard.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>Lecturer Dashboard</h1>
+  <main class="page-shell lecturer-dashboard-page">
+    <section class="page-hero">
+      <div>
+        <p class="section-eyebrow">Lecturer Portal</p>
+        <h1>Lecturer Dashboard</h1>
+        <p class="page-subtitle">
+          Manage quizzes, launch live sessions, and monitor student gameplay across Classic, Battle Royale, and Tactical Duel modes.
+        </p>
+      </div>
 
-    <div class="menu-buttons">
-      <button onclick="window.location.href='create-quiz.html'">Create Quiz</button>
-      <button onclick="window.location.href='start-session.html'">Start Session</button>
-      <button onclick="window.location.href='lecturer-results.html'">View Results</button>
-      <button onclick="logout()">Logout</button>
-    </div>
-  </div>
+      <div class="page-pills">
+        <div class="info-pill">Quiz Platform</div>
+        <div class="info-pill">Lecturer Access</div>
+      </div>
+    </section>
 
-  <script>
-    if (localStorage.getItem("lecturerLoggedIn") !== "true") {
-      window.location.href = "lecturer-login.html";
-    }
+    <section class="page-card">
+      <div class="section-heading">
+        <h2>Overview</h2>
+      </div>
 
-    function logout() {
-      localStorage.removeItem("lecturerLoggedIn");
-      window.location.href = "lecturer-login.html";
-    }
-  </script>
+      <div class="quick-stats">
+        <article class="quick-stat">
+          <p class="quick-stat-label">Available Quizzes</p>
+          <p id="quizCountValue" class="quick-stat-value">--</p>
+        </article>
+
+        <article class="quick-stat">
+          <p class="quick-stat-label">Main Lecturer Tools</p>
+          <p class="quick-stat-value">3</p>
+        </article>
+
+        <article class="quick-stat">
+          <p class="quick-stat-label">Supported Modes</p>
+          <p class="quick-stat-value">3</p>
+        </article>
+      </div>
+
+      <div id="dashboardMessage" class="status-message" aria-live="polite"></div>
+    </section>
+
+    <section class="dashboard-grid">
+      <article class="page-card dashboard-card">
+        <div>
+          <div class="section-heading">
+            <h2>Create Quiz</h2>
+          </div>
+          <p>
+            Build a new quiz manually or use the integrated AI assistant to generate and refine questions before saving.
+          </p>
+        </div>
+        <div class="action-row">
+          <button id="goToCreateQuizBtn" class="primary-btn">Open Quiz Builder</button>
+        </div>
+      </article>
+
+      <article class="page-card dashboard-card">
+        <div>
+          <div class="section-heading">
+            <h2>Start Session</h2>
+          </div>
+          <p>
+            Choose a quiz, select the game mode, generate a session code, and move into the live lobby before launch.
+          </p>
+        </div>
+        <div class="action-row">
+          <button id="goToStartSessionBtn" class="primary-btn">Start New Session</button>
+        </div>
+      </article>
+
+      <article class="page-card dashboard-card">
+        <div>
+          <div class="section-heading">
+            <h2>View Results</h2>
+          </div>
+          <p>
+            Review final participant scores and session summaries after ending a live session.
+          </p>
+        </div>
+        <div class="action-row">
+          <button id="goToResultsBtn" class="secondary-btn">Open Latest Results</button>
+        </div>
+      </article>
+
+      <article class="page-card dashboard-card">
+        <div>
+          <div class="section-heading">
+            <h2>Logout</h2>
+          </div>
+          <p>
+            End the lecturer session on this browser and return to the login page.
+          </p>
+        </div>
+        <div class="action-row">
+          <button id="logoutBtn" class="danger-btn">Logout</button>
+        </div>
+      </article>
+    </section>
+  </main>
 
   <script src="guards.js"></script>
-<script>
-  requireLecturerLogin();
-
-  function logout() {
-    localStorage.removeItem("lecturerLoggedIn");
-    localStorage.removeItem("lecturerName");
-    localStorage.removeItem("lecturerEmail");
-    localStorage.removeItem("lecturerAccessCode");
-    window.location.href = "lecturer-login.html";
-  }
-</script>
+  <script>
+    requireLecturerLogin();
+  </script>
+  <script src="lecturer-dashboard.js"></script>
 </body>
 </html>

@@ -13,6 +13,14 @@ const {
   applyRoundResults
 } = require("../services/battleRoyaleService");
 
+const {
+  createTacticalDuel,
+  getRemainingTimeSeconds,
+  checkTimeoutAndResolve,
+  selectAction,
+  submitAnswer
+} = require("../services/tacticalDuelService");
+
 const router = express.Router();
 
 
@@ -24,6 +32,18 @@ function generateCode(length = 6) {
     code += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return code;
+}
+
+function validateTacticalDuelSession(session) {
+  if (!session) {
+    return "Session not found";
+  }
+
+  if (session.gameMode !== "tacticalDuel") {
+    return "This session is not in Tactical Duel mode";
+  }
+
+  return null;
 }
 
 // Start a quiz session
@@ -290,44 +310,61 @@ router.post("/:accessCode/submit-battle-answer", async (req, res) => {
   try {
     const { nickname, selectedAnswer, responseTime } = req.body;
 
-    const session = await Session.findOne({ accessCode: req.params.accessCode }).populate("quizId");
+    const session = await Session.findOne({
+      accessCode: req.params.accessCode
+    }).populate("quizId");
 
     if (!session) {
       return res.status(404).json({ message: "Session not found" });
     }
 
     if (session.gameMode !== "battleRoyale") {
-      return res.status(400).json({ message: "This session is not in battle royale mode" });
+      return res.status(400).json({
+        message: "This session is not in battle royale mode"
+      });
     }
 
     if (session.status !== "live" || session.battleState.phase !== "question") {
-      return res.status(400).json({ message: "Battle round is not currently accepting answers" });
+      return res.status(400).json({
+        message: "Battle round is not currently accepting answers"
+      });
     }
 
-    const participant = session.participants.find((p) => p.nickname === nickname);
+    const participant = session.participants.find(
+      (p) => p.nickname === nickname
+    );
 
     if (!participant) {
       return res.status(404).json({ message: "Participant not found" });
     }
 
     if (participant.status !== "active") {
-      return res.status(400).json({ message: "Eliminated players cannot answer" });
+      return res.status(400).json({
+        message: "Eliminated players cannot answer"
+      });
     }
 
     const duel = findDuelByNickname(session.battleState.duels, nickname);
 
     if (!duel) {
-      return res.status(404).json({ message: "Duel not found for this player" });
+      return res.status(404).json({
+        message: "Duel not found for this player"
+      });
     }
 
     if (duel.isBye) {
-      return res.status(400).json({ message: "This player has a bye and does not answer this round" });
+      return res.status(400).json({
+        message: "This player has a bye and does not answer this round"
+      });
     }
 
-    const currentQuestion = session.quizId.questions[session.battleState.currentQuestionIndex];
+    const currentQuestion =
+      session.quizId.questions[session.battleState.currentQuestionIndex];
 
     if (!currentQuestion) {
-      return res.status(400).json({ message: "No question found for current round" });
+      return res.status(400).json({
+        message: "No question found for current round"
+      });
     }
 
     let duelPlayer;
@@ -341,111 +378,123 @@ router.post("/:accessCode/submit-battle-answer", async (req, res) => {
       return res.status(404).json({ message: "Player not found in duel" });
     }
 
+    // Prevent answering the same question twice
+    if (duelPlayer.answered) {
+      return res.status(400).json({
+        message: "Player has already answered this question"
+      });
+    }
+
+    // Save this player's answer for the current duel question
+    const isCorrect = currentQuestion.correctAnswer === selectedAnswer;
+
+    duelPlayer.selectedAnswer = selectedAnswer;
+    duelPlayer.responseTime = responseTime ?? 0;
+    duelPlayer.isCorrect = isCorrect;
+    duelPlayer.answered = true;
+
+    // If both players in this duel have answered this question, update duel score
     if (duel.player1.answered && duel.player2.answered) {
+      if (duel.player1.isCorrect) duel.player1Score += 1;
+      if (duel.player2.isCorrect) duel.player2Score += 1;
+    }
 
-  // Update duel scores for this question step
-  if (duel.player1.isCorrect) duel.player1Score += 1;
-  if (duel.player2.isCorrect) duel.player2Score += 1;
-}
+    // Check if all active duels have answered this current question
+    if (areAllNonByeDuelsAnsweredForCurrentQuestion(session.battleState.duels)) {
+      console.log("ALL DUELS ANSWERED FOR CURRENT QUESTION");
+      console.log("Before update:", {
+        currentRound: session.battleState.currentRound,
+        currentQuestionInRound: session.battleState.currentQuestionInRound,
+        currentQuestionIndex: session.battleState.currentQuestionIndex
+      });
 
-console.log("ALL DUELS ANSWERED FOR CURRENT QUESTION");
-console.log("Before update:", {
-  currentRound: session.battleState.currentRound,
-  currentQuestionInRound: session.battleState.currentQuestionInRound,
-  currentQuestionIndex: session.battleState.currentQuestionIndex
-});
+      // If there is still another question left in this duel
+      if (
+        session.battleState.currentQuestionInRound <
+        session.battleState.questionsPerDuel - 1
+      ) {
+        session.battleState.currentQuestionInRound += 1;
+        session.battleState.currentQuestionIndex += 1;
 
-if (areAllNonByeDuelsAnsweredForCurrentQuestion(session.battleState.duels)) {
+        console.log("Moved to next question step:", {
+          currentRound: session.battleState.currentRound,
+          currentQuestionInRound: session.battleState.currentQuestionInRound,
+          currentQuestionIndex: session.battleState.currentQuestionIndex
+        });
 
-  // 👉 If still more questions in this round
-  if (session.battleState.currentQuestionInRound < session.battleState.questionsPerDuel - 1) {
+        // Reset per-question answer state for next question in same duel
+        session.battleState.duels.forEach((duel) => {
+          if (!duel.isBye) {
+            duel.player1.answered = false;
+            duel.player2.answered = false;
 
-    // Move to next question step
-    session.battleState.currentQuestionInRound += 1;
-    session.battleState.currentQuestionIndex += 1;
+            duel.player1.selectedAnswer = null;
+            duel.player2.selectedAnswer = null;
 
-    console.log("Moved to next question step:", {
-  currentRound: session.battleState.currentRound,
-  currentQuestionInRound: session.battleState.currentQuestionInRound,
-  currentQuestionIndex: session.battleState.currentQuestionIndex
-});
+            duel.player1.responseTime = null;
+            duel.player2.responseTime = null;
 
-    // Reset duel answer states
-    session.battleState.duels.forEach((duel) => {
-      if (!duel.isBye) {
-        duel.player1.answered = false;
-        duel.player2.answered = false;
+            duel.player1.isCorrect = false;
+            duel.player2.isCorrect = false;
+          }
+        });
+      } else {
+        console.log("Resolving duel after final question:", {
+          currentRound: session.battleState.currentRound,
+          currentQuestionInRound: session.battleState.currentQuestionInRound,
+          currentQuestionIndex: session.battleState.currentQuestionIndex
+        });
 
-        duel.player1.selectedAnswer = null;
-        duel.player2.selectedAnswer = null;
+        // Final question of duel completed -> resolve all duels
+        session.battleState.duels.forEach((duel) => {
+          if (!duel.isBye && duel.status !== "completed") {
+            let winner;
+            let loser;
 
-        duel.player1.responseTime = null;
-        duel.player2.responseTime = null;
+            if (duel.player1Score > duel.player2Score) {
+              winner = duel.player1.nickname;
+              loser = duel.player2.nickname;
+            } else if (duel.player2Score > duel.player1Score) {
+              winner = duel.player2.nickname;
+              loser = duel.player1.nickname;
+            } else {
+              // Tie-break on final question result / response time
+              const result = resolveDuel(duel.player1, duel.player2);
+              winner = result.winner;
+              loser = result.loser;
+            }
 
-        duel.player1.isCorrect = false;
-        duel.player2.isCorrect = false;
+            duel.winner = winner;
+            duel.loser = loser;
+            duel.status = "completed";
+
+            const winnerParticipant = session.participants.find(
+              (p) => p.nickname === winner
+            );
+
+            if (winnerParticipant) {
+              winnerParticipant.score += 1;
+            }
+          }
+        });
+
+        applyRoundResults(session);
       }
-    });
-
-  } else {
-
-    console.log("Moved to next question step:", {
-  currentRound: session.battleState.currentRound,
-  currentQuestionInRound: session.battleState.currentQuestionInRound,
-  currentQuestionIndex: session.battleState.currentQuestionIndex
-});
-
-    // ✅ Final question of duel → resolve all duels
-    session.battleState.duels.forEach((duel) => {
-      if (!duel.isBye && duel.status !== "completed") {
-
-        let winner;
-        let loser;
-
-        if (duel.player1Score > duel.player2Score) {
-          winner = duel.player1.nickname;
-          loser = duel.player2.nickname;
-        } else if (duel.player2Score > duel.player1Score) {
-          winner = duel.player2.nickname;
-          loser = duel.player1.nickname;
-        } else {
-          const result = resolveDuel(duel.player1, duel.player2);
-          winner = result.winner;
-          loser = result.loser;
-        }
-
-        duel.winner = winner;
-        duel.loser = loser;
-        duel.status = "completed";
-
-        const winnerParticipant = session.participants.find((p) => p.nickname === winner);
-        if (winnerParticipant) {
-          winnerParticipant.score += 1;
-        }
-      }
-    });
-
-    // Apply round results (eliminate players / check winner)
-    applyRoundResults(session);
-  }
-}
-
-  
-
-    if (areAllNonByeDuelsCompleted(session.battleState.duels)) {
-      applyRoundResults(session);
     }
 
     await session.save();
 
     res.json({
       message: "Battle answer submitted successfully",
+      isCorrect,
       battleState: session.battleState,
       participants: session.participants
     });
   } catch (error) {
     console.error("Submit battle answer error:", error);
-    res.status(500).json({ message: "Server error while submitting battle answer" });
+    res.status(500).json({
+      message: "Server error while submitting battle answer"
+    });
   }
 });
 
@@ -498,6 +547,175 @@ router.post("/:accessCode/next-round", async (req, res) => {
   } catch (error) {
     console.error("Next round error:", error);
     res.status(500).json({ message: "Server error while starting next round" });
+  }
+});
+
+// =====================
+// TACTICAL DUEL ROUTES
+// =====================
+
+router.post("/:accessCode/start-tactical-duel", async (req, res) => {
+  try {
+    const session = await Session.findOne({
+      accessCode: req.params.accessCode
+    }).populate("quizId");
+
+    const validationError = validateTacticalDuelSession(session);
+    if (validationError) {
+      return res.status(400).json({ message: validationError });
+    }
+
+    if (!session.quizId || !session.quizId.questions || session.quizId.questions.length === 0) {
+      return res.status(400).json({ message: "Quiz has no questions" });
+    }
+
+    const activeParticipants = session.participants.filter((p) => p.status === "active");
+
+    if (activeParticipants.length !== 2) {
+      return res.status(400).json({
+        message: "Tactical Duel MVP requires exactly 2 active participants"
+      });
+    }
+
+    createTacticalDuel(session, session.quizId);
+
+    await session.save();
+
+    res.json({
+      message: "Tactical Duel started successfully",
+      tacticalDuelState: session.tacticalDuelState,
+      participants: session.participants
+    });
+  } catch (error) {
+    console.error("Start tactical duel error:", error);
+    res.status(500).json({
+      message: error.message || "Server error while starting Tactical Duel"
+    });
+  }
+});
+
+router.get("/:accessCode/tactical-duel-state", async (req, res) => {
+  try {
+    const session = await Session.findOne({
+      accessCode: req.params.accessCode
+    }).populate("quizId");
+
+    const validationError = validateTacticalDuelSession(session);
+    if (validationError) {
+      return res.status(400).json({ message: validationError });
+    }
+
+    checkTimeoutAndResolve(session);
+    await session.save();
+
+    const duel = session.tacticalDuelState?.duel || {};
+    const remainingTimeSeconds = duel?.phase === "finished"
+      ? 0
+      : getRemainingTimeSeconds(duel);
+
+    res.json({
+      accessCode: session.accessCode,
+      gameMode: session.gameMode,
+      status: session.status,
+      participants: session.participants,
+      tacticalDuelState: session.tacticalDuelState,
+      remainingTimeSeconds,
+      quiz: session.quizId
+    });
+  } catch (error) {
+    console.error("Get tactical duel state error:", error);
+    res.status(500).json({
+      message: error.message || "Server error while fetching Tactical Duel state"
+    });
+  }
+});
+
+router.post("/:accessCode/tactical-duel/select-action", async (req, res) => {
+  try {
+    const { nickname, action } = req.body;
+
+    const session = await Session.findOne({
+      accessCode: req.params.accessCode
+    }).populate("quizId");
+
+    const validationError = validateTacticalDuelSession(session);
+    if (validationError) {
+      return res.status(400).json({ message: validationError });
+    }
+
+    checkTimeoutAndResolve(session);
+
+    if (session.tacticalDuelState.duel.phase === "finished") {
+      await session.save();
+      return res.status(400).json({ message: "Tactical Duel is already finished" });
+    }
+
+    const question = selectAction(session, session.quizId, nickname, action);
+
+    await session.save();
+
+    res.json({
+      message: "Action selected successfully",
+      action,
+      question,
+      tacticalDuelState: session.tacticalDuelState,
+      remainingTimeSeconds: getRemainingTimeSeconds(session.tacticalDuelState.duel)
+    });
+  } catch (error) {
+    console.error("Select tactical action error:", error);
+    res.status(500).json({
+      message: error.message || "Server error while selecting tactical action"
+    });
+  }
+});
+
+router.post("/:accessCode/tactical-duel/submit-answer", async (req, res) => {
+  try {
+    const { nickname, selectedAnswer, responseTime } = req.body;
+
+    const session = await Session.findOne({
+      accessCode: req.params.accessCode
+    }).populate("quizId");
+
+    const validationError = validateTacticalDuelSession(session);
+    if (validationError) {
+      return res.status(400).json({ message: validationError });
+    }
+
+    checkTimeoutAndResolve(session);
+
+    if (session.tacticalDuelState.duel.phase === "finished") {
+      await session.save();
+      return res.status(400).json({ message: "Tactical Duel is already finished" });
+    }
+
+    const turnSummary = submitAnswer(
+      session,
+      session.quizId,
+      nickname,
+      selectedAnswer,
+      responseTime
+    );
+
+    checkTimeoutAndResolve(session);
+
+    await session.save();
+
+    res.json({
+      message: "Tactical Duel answer submitted successfully",
+      turnSummary,
+      tacticalDuelState: session.tacticalDuelState,
+      participants: session.participants,
+      remainingTimeSeconds:
+        session.tacticalDuelState.duel.phase === "finished"
+          ? 0
+          : getRemainingTimeSeconds(session.tacticalDuelState.duel)
+    });
+  } catch (error) {
+    console.error("Submit tactical duel answer error:", error);
+    res.status(500).json({
+      message: error.message || "Server error while submitting Tactical Duel answer"
+    });
   }
 });
 

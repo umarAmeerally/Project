@@ -1,37 +1,100 @@
 const accessCode = localStorage.getItem("accessCode");
 const nickname = localStorage.getItem("nickname");
 
-const sessionText = document.getElementById("sessionText");
+const waitingMessage = document.getElementById("waitingMessage");
+const accessCodeText = document.getElementById("accessCodeText");
 const nicknameText = document.getElementById("nicknameText");
-const statusMessage = document.getElementById("statusMessage");
+const participantsList = document.getElementById("participantsList");
+const participantsEmptyText = document.getElementById("participantsEmptyText");
 
-sessionText.textContent = `Session Code: ${accessCode}`;
-nicknameText.textContent = `Nickname: ${nickname}`;
+if (accessCodeText) {
+  accessCodeText.textContent = `Session Code: ${accessCode || "----"}`;
+}
+
+if (nicknameText) {
+  nicknameText.textContent = nickname || "----";
+}
+
+function renderParticipants(participants = []) {
+  if (!participantsList || !participantsEmptyText) return;
+
+  participantsList.innerHTML = "";
+
+  if (!participants.length) {
+    participantsEmptyText.style.display = "block";
+    return;
+  }
+
+  participantsEmptyText.style.display = "none";
+
+  participants.forEach((participant) => {
+    const li = document.createElement("li");
+    li.textContent = participant.nickname;
+    participantsList.appendChild(li);
+  });
+}
 
 async function checkSessionStatus() {
-  const data = await getSessionData(accessCode);
-
-  if (!data) {
-    statusMessage.textContent = "Session not found.";
-    statusMessage.style.color = "red";
-    setTimeout(() => {
+  try {
+    if (!accessCode || !nickname) {
+      alert("Missing session information. Please join again.");
       window.location.href = "join-session.html";
-    }, 1500);
-    return;
-  }
+      return;
+    }
 
-  if (data.status === "live") {
-    window.location.href = "quiz.html";
-    return;
-  }
+    const response = await fetch(`/api/sessions/${accessCode}`);
+    const data = await response.json();
 
-  if (data.status === "ended") {
-    window.location.href = "result.html";
-    return;
-  }
+    if (!response.ok) {
+      if (waitingMessage) {
+        waitingMessage.textContent = data.message || "Session not found.";
+      }
+      return;
+    }
 
-  statusMessage.textContent = "Waiting for lecturer...";
-  statusMessage.style.color = "green";
+    renderParticipants(data.participants || []);
+
+    const participantExists = data.participants?.some(
+      (p) => p.nickname === nickname
+    );
+
+    if (!participantExists) {
+      alert("You are no longer part of this session.");
+      window.location.href = "join-session.html";
+      return;
+    }
+
+    if (data.status === "ended") {
+      window.location.href = "result.html";
+      return;
+    }
+
+    if (data.status !== "live") {
+      if (waitingMessage) {
+        waitingMessage.textContent = "Waiting for lecturer to start the session...";
+      }
+      return;
+    }
+
+    if (data.gameMode === "tacticalDuel") {
+      window.location.href = "tactical-duel.html";
+      return;
+    }
+
+    if (data.gameMode === "battleRoyale" || data.gameMode === "classic") {
+      window.location.href = "quiz.html";
+      return;
+    }
+
+    if (waitingMessage) {
+      waitingMessage.textContent = "Unknown game mode.";
+    }
+  } catch (error) {
+    console.error("Error checking session status:", error);
+    if (waitingMessage) {
+      waitingMessage.textContent = "Server error while checking session status.";
+    }
+  }
 }
 
 checkSessionStatus();

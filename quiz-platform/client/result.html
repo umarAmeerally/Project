@@ -3,24 +3,61 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Results</title>
+  <title>Quiz Result</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="css/ui-theme.css" />
+  <link rel="stylesheet" href="css/result.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>Quiz Results</h1>
+  <main class="result-page">
+    <div class="result-shell">
+      <section class="page-card result-hero">
+        <p class="section-eyebrow">Session Complete</p>
+        <h1>Your Result</h1>
+        <p id="nicknameText" class="page-subtitle">Player: ----</p>
+        <p id="scoreText" class="result-score">0</p>
+        <p id="resultMessage" class="result-subtext">
+          Your result is being loaded...
+        </p>
+      </section>
 
-    <h2 id="scoreText"></h2>
+      <section class="page-card">
+        <div class="section-heading">
+          <h2>Session Summary</h2>
+        </div>
 
-    <div id="details"></div>
+        <div class="summary-grid">
+          <article class="summary-card">
+            <p class="summary-label">Session Code</p>
+            <p id="sessionCodeText" class="summary-value">----</p>
+          </article>
 
-    <button onclick="goHome()">Back to Home</button>
-  </div>
+          <article class="summary-card">
+            <p class="summary-label">Game Mode</p>
+            <p id="gameModeText" class="summary-value">----</p>
+          </article>
 
-  <script src="guards.js"></script>
-<script>
-  requireStudentSession();
-</script>
-<script src="result.js"></script>
+          <article class="summary-card">
+            <p class="summary-label">Final Status</p>
+            <p id="statusText" class="summary-value">----</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="page-card">
+        <div class="section-heading">
+          <h2>Next Step</h2>
+        </div>
+        <p class="result-message">
+          You can now leave this page or return to the join screen to participate in another session.
+        </p>
+        <div class="action-row">
+          <button id="backToJoinBtn" class="primary-btn">Back to Join Session</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="result.js"></script>
 </body>
 </html>

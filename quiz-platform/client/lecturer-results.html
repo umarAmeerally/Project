@@ -5,24 +5,74 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Lecturer Results</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="css/ui-theme.css" />
+  <link rel="stylesheet" href="css/lecturer-results.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>Session Results</h1>
+  <main class="page-shell lecturer-results-page">
+    <section class="page-hero">
+      <div>
+        <p class="section-eyebrow">Lecturer Results</p>
+        <h1>Session Results</h1>
+        <p class="page-subtitle">Review the final session summary and participant scores.</p>
+      </div>
 
-    <p id="sessionCodeText"></p>
-    <p id="summaryText"></p>
+      <div class="page-pills">
+        <div id="sessionCodeText" class="info-pill">Session Code: ----</div>
+      </div>
+    </section>
 
-    <h2>Participant Scores</h2>
-    <ul id="resultsList"></ul>
+    <section class="page-card">
+      <div class="section-heading">
+        <h2>Session Summary</h2>
+      </div>
 
-    <button onclick="goBackToDashboard()">Back to Dashboard</button>
-  </div>
+      <div id="summaryGrid" class="metric-grid">
+        <article class="metric-card">
+          <p class="metric-label">Total Participants</p>
+          <p id="totalParticipantsValue" class="metric-value">0</p>
+        </article>
+
+        <article class="metric-card">
+          <p class="metric-label">Average Score</p>
+          <p id="averageScoreValue" class="metric-value">0</p>
+        </article>
+
+        <article class="metric-card">
+          <p class="metric-label">Highest Score</p>
+          <p id="highestScoreValue" class="metric-value">0</p>
+        </article>
+
+        <article class="metric-card">
+          <p class="metric-label">Lowest Score</p>
+          <p id="lowestScoreValue" class="metric-value">0</p>
+        </article>
+      </div>
+
+      <div id="summaryText" class="status-message"></div>
+    </section>
+
+    <section class="page-card">
+      <div class="section-heading">
+        <h2>Participant Scores</h2>
+      </div>
+      <div id="resultsList" class="result-list"></div>
+    </section>
+
+    <section class="page-card">
+      <div class="section-heading">
+        <h2>Next Action</h2>
+      </div>
+      <div class="action-row">
+        <button id="backToDashboardBtn" class="primary-btn">Back to Dashboard</button>
+      </div>
+    </section>
+  </main>
 
   <script src="guards.js"></script>
-<script>
-  requireLecturerLogin();
-</script>
-<script src="lecturer-results.js"></script>
+  <script>
+    requireLecturerLogin();
+  </script>
+  <script src="lecturer-results.js"></script>
 </body>
 </html>

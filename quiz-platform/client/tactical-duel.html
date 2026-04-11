@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tactical Duel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/tactical-duel.css">
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="hero-left">
+        <div class="logo">TD</div>
+        <div>
+          <h1 id="quizTitle">Tactical Duel</h1>
+          <p>Strategic quiz combat where each answer powers your next move.</p>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="pill" id="sessionCodeBadge">Session Code: ----</div>
+        <div class="pill" id="playerBadge">Player: ----</div>
+      </div>
+    </section>
+
+    <section class="layout">
+      <section class="panel duel-card">
+        <div class="panel-head">
+          <div>
+            <h2 class="panel-title">Combatants</h2>
+            <div class="panel-sub">Track health, buffs, and hidden tactics at a glance.</div>
+          </div>
+        </div>
+        <div class="panel-body duel-card">
+          <article class="player-card" id="yourPlayerCard">
+            <div class="player-top">
+              <div class="player-name-wrap">
+                <h2 id="yourName">You</h2>
+                <p>Your current duel state</p>
+              </div>
+              <div class="avatar" id="yourAvatar">Y</div>
+            </div>
+            <div class="bar-wrap">
+              <div class="bar-label-row">
+                <span>Health</span>
+                <strong id="yourHpText">100 / 100</strong>
+              </div>
+              <div class="hp-bar-shell">
+                <div class="hp-bar-fill" id="yourHpBar" style="--hp: 100%;"></div>
+              </div>
+            </div>
+            <div class="status-row">
+              <div class="chip"><span class="chip-dot"></span><span id="yourGuardStatus">Guard: 0</span></div>
+              <div class="chip"><span class="chip-dot"></span><span id="yourFocusStatus">Focus: 0</span></div>
+              <div class="chip"><span class="chip-dot"></span><span id="yourCounterStatus">Counter Ready</span></div>
+            </div>
+          </article>
+
+          <article class="player-card" id="opponentPlayerCard">
+            <div class="player-top">
+              <div class="player-name-wrap">
+                <h3 id="opponentName">Opponent</h3>
+                <p>Opponent visible status</p>
+              </div>
+              <div class="avatar" id="opponentAvatar">O</div>
+            </div>
+            <div class="bar-wrap">
+              <div class="bar-label-row">
+                <span>Health</span>
+                <strong id="opponentHpText">100 / 100</strong>
+              </div>
+              <div class="hp-bar-shell">
+                <div class="hp-bar-fill" id="opponentHpBar" style="--hp: 100%;"></div>
+              </div>
+            </div>
+            <div class="status-row">
+              <div class="chip"><span class="chip-dot"></span><span id="opponentGuardStatus">Guard: 0</span></div>
+              <div class="chip"><span class="chip-dot"></span><span id="opponentFocusStatus">Focus: 0</span></div>
+              <div class="chip"><span class="chip-dot"></span><span id="opponentSecretStatus">Secret Tactic: Unknown</span></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="center-stack">
+        <section class="timer-card">
+          <div class="timer-grid">
+            <div class="timer-meta">
+              <small>Battle Timer</small>
+              <h2 id="tacticalTimerInfo">03:00</h2>
+              <p id="tacticalTurnInfo">Turn 1 — waiting for match state…</p>
+            </div>
+            <div class="turn-badge">
+              <strong id="tacticalTurnOwner">Your Move</strong>
+              <span id="tacticalPhaseInfo">Phase: Action Selection</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="question-card">
+          <div class="section-label">Question Arena</div>
+          <p class="question-note" id="tacticalStatusText">Choose an action to begin your turn.</p>
+          <h2 class="question-title" id="questionTitle">Your next decision will shape the duel.</h2>
+          <div id="questionContainer">
+            <div class="options-grid" id="optionsGrid">
+              <button class="option-btn">Option A</button>
+              <button class="option-btn">Option B</button>
+              <button class="option-btn">Option C</button>
+              <button class="option-btn">Option D</button>
+            </div>
+          </div>
+          <div class="submit-row">
+            <button id="nextBtn" class="submit-btn">Lock In Answer</button>
+          </div>
+        </section>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2 class="panel-title">Tactical Control</h2>
+            <div class="panel-sub">Pick a move, create pressure, and time your counter wisely.</div>
+          </div>
+        </div>
+        <div class="panel-body action-panel">
+          <div class="section-label">Core Actions</div>
+          <div class="action-grid" id="tacticalActionButtons">
+            <button class="action-btn" id="strikeBtn" type="button">
+              <strong>Strike</strong>
+              <span>Deal direct damage. Stronger if you answer correctly.</span>
+            </button>
+            <button class="action-btn" id="guardBtn" type="button">
+              <strong>Guard</strong>
+              <span>Reduce the next incoming strike with a defensive block.</span>
+            </button>
+            <button class="action-btn" id="focusBtn" type="button">
+              <strong>Focus</strong>
+              <span>Store bonus power for your next strike.</span>
+            </button>
+            <button class="action-btn" id="recoverBtn" type="button">
+              <strong>Recover</strong>
+              <span>Restore HP and stay in the fight longer.</span>
+            </button>
+          </div>
+          <button class="special-btn" id="counterBtn" type="button">
+            Use Counter
+            <small>One-time secret tactic. Arm it and punish the next incoming strike.</small>
+          </button>
+
+          <section class="status-card panel" style="margin-top: 8px;">
+            <div class="panel-body" style="padding: 18px;">
+              <div class="section-label">Live Status</div>
+              <div class="status-banner" id="liveStatusBanner">
+                The duel is ready. Waiting for backend state...
+              </div>
+            </div>
+          </section>
+
+          <section class="log-card panel" style="margin-top: 8px;">
+            <div class="panel-body" style="padding: 18px;">
+              <div class="section-label">Battle Log</div>
+              <div class="log-list" id="battleLogList">
+                <div class="log-item">No actions yet.</div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </section>
+
+    <p class="footer-note">Tactical Duel Mode — a strategic learning battle built for engagement, timing, and adaptive play.</p>
+  </main>
+
+  <script src="quiz-tactical-duel.js"></script>
+</body>
+</html>

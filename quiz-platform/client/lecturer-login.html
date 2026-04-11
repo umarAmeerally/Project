@@ -5,23 +5,79 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Lecturer Login</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="css/ui-theme.css" />
+  <link rel="stylesheet" href="css/lecturer-login.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>Lecturer Login</h1>
+  <main class="lecturer-login-page">
+    <div class="login-shell">
+      <section class="page-card login-panel">
+        <p class="section-eyebrow">Lecturer Access</p>
+        <h1>Lecturer Login</h1>
+        <p class="page-subtitle">
+          Sign in to manage quizzes, launch sessions, and monitor live gameplay.
+        </p>
 
-    <form id="loginForm">
-      <label>Email</label>
-      <input type="email" id="email" required />
+        <form id="loginForm" class="form-stack">
+          <div class="form-row">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              placeholder="Enter lecturer email"
+              required
+            />
+          </div>
 
-      <label>Password</label>
-      <input type="password" id="password" required />
+          <div class="form-row">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              placeholder="Enter password"
+              required
+            />
+          </div>
 
-      <button type="submit">Login</button>
-    </form>
+          <div class="action-row">
+            <button type="submit" class="primary-btn">Login</button>
+          </div>
+        </form>
 
-    <div id="message"></div>
-  </div>
+        <div id="message" class="status-message" aria-live="polite"></div>
+      </section>
+
+      <section class="page-card info-panel">
+        <p class="section-eyebrow">Platform Capabilities</p>
+        <h2>What you can do here</h2>
+        <p class="helper-text">
+          The lecturer portal supports a full workflow from quiz creation to session monitoring and results.
+        </p>
+
+        <ul class="feature-list">
+          <li class="feature-item">
+            <strong>Create quizzes manually or with AI assistance</strong>
+            <span>Generate questions, review them, and save them into the platform.</span>
+          </li>
+
+          <li class="feature-item">
+            <strong>Launch sessions in 3 game modes</strong>
+            <span>Classic, Battle Royale, and Tactical Duel are available from the same lecturer workflow.</span>
+          </li>
+
+          <li class="feature-item">
+            <strong>Monitor live student activity</strong>
+            <span>Use the dedicated monitoring page to follow active sessions without mixing it into the lobby.</span>
+          </li>
+
+          <li class="feature-item">
+            <strong>Review end-of-session results</strong>
+            <span>See final scores and session summaries after the game ends.</span>
+          </li>
+        </ul>
+      </section>
+    </div>
+  </main>
 
   <script src="lecturer-login.js"></script>
 </body>

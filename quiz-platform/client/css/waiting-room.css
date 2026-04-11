@@ -1,0 +1,75 @@
+.waiting-room-page {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.waiting-room-page .waiting-shell {
+  width: 100%;
+  max-width: 900px;
+}
+
+.waiting-room-page .center-card {
+  text-align: center;
+}
+
+.waiting-room-page .big-code {
+  font-size: 2.4rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  margin: 14px 0 18px;
+  color: var(--accent-2);
+}
+
+.waiting-room-page .status-text {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  margin-bottom: 18px;
+}
+
+.waiting-room-page .player-name {
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.waiting-room-page .pulse-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--success);
+  display: inline-block;
+  margin-right: 8px;
+  animation: pulse 1.2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.3); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.waiting-room-page .players-list {
+  margin-top: 16px;
+  padding-left: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+.waiting-room-page .players-list li {
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+}
+
+.waiting-room-page .info-row {
+  margin-top: 12px;
+  color: var(--text-muted);
+}
+
+.waiting-room-page #participantsEmptyText {
+  text-align: center;
+  margin-top: 10px;
+}

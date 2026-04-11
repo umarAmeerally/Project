@@ -1,0 +1,30 @@
+.monitoring-page .participants-list {
+  line-height: 1.65;
+}
+
+.monitoring-page h3 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-size: 1rem;
+  color: var(--text-main);
+}
+
+.monitoring-page p {
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.monitoring-page .monitor-card h3,
+.monitoring-page .monitor-card h4,
+.monitoring-page .monitor-card p {
+  color: var(--text-main);
+}
+
+.monitoring-page .monitor-card p {
+  margin-bottom: 8px;
+}
+
+.monitoring-page #duelsContainer:empty::after,
+.monitoring-page #tacticalBattleLog:empty::after {
+  content: "";
+}

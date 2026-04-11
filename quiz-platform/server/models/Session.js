@@ -1,5 +1,9 @@
 const mongoose = require("mongoose");
 
+// =====================
+// EXISTING BATTLE ROYALE SCHEMAS (UNCHANGED)
+// =====================
+
 const duelPlayerSchema = new mongoose.Schema(
   {
     nickname: { type: String, required: true },
@@ -23,7 +27,11 @@ const duelSchema = new mongoose.Schema(
       type: String,
       enum: ["pending", "completed"],
       default: "pending"
-    }
+    },
+    questionCount: { type: Number, default: 0 },
+    maxQuestions: { type: Number, default: 2 },
+    player1Score: { type: Number, default: 0 },
+    player2Score: { type: Number, default: 0 }
   },
   { _id: false }
 );
@@ -70,6 +78,91 @@ const battleStateSchema = new mongoose.Schema(
   { _id: false }
 );
 
+// =====================
+// NEW: TACTICAL DUEL MODE
+// =====================
+
+const tacticalPlayerStateSchema = new mongoose.Schema(
+  {
+    nickname: { type: String, required: true },
+
+    hp: { type: Number, default: 100 },
+
+    guardValue: { type: Number, default: 0 }, // visible
+    focusBonus: { type: Number, default: 0 }, // visible
+
+    hasCounterAvailable: { type: Boolean, default: true }, // can still use counter
+    hiddenCounterArmed: { type: Boolean, default: false }, // counter ready
+    hiddenCounterStrength: { type: Number, default: 0 }, // stored value
+
+    lastAction: {
+      type: String,
+      enum: ["strike", "guard", "focus", "recover", "counter", null],
+      default: null
+    },
+
+    totalCorrectAnswers: { type: Number, default: 0 },
+    totalResponseTime: { type: Number, default: 0 }
+  },
+  { _id: false }
+);
+
+const tacticalDuelSchema = new mongoose.Schema(
+  {
+    player1: { type: tacticalPlayerStateSchema, default: null },
+    player2: { type: tacticalPlayerStateSchema, default: null },
+
+    activeTurnPlayer: { type: String, default: null },
+
+    phase: {
+      type: String,
+      enum: ["lobby", "actionSelection", "question", "resolution", "finished"],
+      default: "lobby"
+    },
+
+    turnNumber: { type: Number, default: 1 },
+
+    selectedAction: {
+      type: String,
+      enum: ["strike", "guard", "focus", "recover", "counter", null],
+      default: null
+    },
+
+    currentQuestionIndex: { type: Number, default: null },
+    currentQuestionId: { type: String, default: null },
+
+    questionOrder: {
+      type: [Number],
+      default: []
+    },
+
+    questionCursor: { type: Number, default: 0 },
+
+    startedAt: { type: Date, default: null },
+    endsAt: { type: Date, default: null },
+    timeLimitSeconds: { type: Number, default: 180 },
+
+    battleLog: {
+      type: [String],
+      default: []
+    },
+
+    winner: { type: String, default: null }
+  },
+  { _id: false }
+);
+
+const tacticalDuelStateSchema = new mongoose.Schema(
+  {
+    duel: { type: tacticalDuelSchema, default: () => ({}) }
+  },
+  { _id: false }
+);
+
+// =====================
+// SESSION
+// =====================
+
 const sessionSchema = new mongoose.Schema(
   {
     quizId: {
@@ -84,7 +177,7 @@ const sessionSchema = new mongoose.Schema(
     },
     gameMode: {
       type: String,
-      enum: ["classic", "battleRoyale"],
+      enum: ["classic", "battleRoyale", "tacticalDuel"],
       default: "classic"
     },
     participants: {
@@ -100,8 +193,16 @@ const sessionSchema = new mongoose.Schema(
       type: Boolean,
       default: true
     },
+
+    // EXISTING
     battleState: {
       type: battleStateSchema,
+      default: () => ({})
+    },
+
+    // NEW
+    tacticalDuelState: {
+      type: tacticalDuelStateSchema,
       default: () => ({})
     }
   },

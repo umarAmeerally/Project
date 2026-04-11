@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Session Monitoring</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="css/ui-theme.css" />
+  <link rel="stylesheet" href="css/monitoring.css" />
+</head>
+<body>
+  <main class="page-shell monitoring-page">
+    <section class="page-hero">
+      <div>
+        <p class="section-eyebrow">Lecturer Monitoring</p>
+        <h1>Session Monitoring</h1>
+        <p class="page-subtitle">Track the live session flow without mixing it into the waiting lobby.</p>
+      </div>
+
+      <div class="page-pills">
+        <div id="monitorAccessCodeText" class="info-pill">Session Code: ----</div>
+        <div id="monitorGameModeText" class="info-pill">Mode: ----</div>
+        <div id="monitorStatusText" class="info-pill">Status: ----</div>
+      </div>
+    </section>
+
+    <section class="page-card">
+      <div class="section-heading">
+        <h2>Session Overview</h2>
+      </div>
+      <p id="quizTitleText">Quiz: ----</p>
+      <p id="participantCountText">Participants: 0</p>
+    </section>
+
+    <section class="page-card">
+      <div class="section-heading">
+        <h2>Participants</h2>
+      </div>
+      <ul id="monitorParticipantsList" class="participants-list"></ul>
+    </section>
+
+    <section id="classicMonitorSection" class="page-card mode-section" hidden>
+      <div class="section-heading">
+        <h2>Classic Monitor</h2>
+      </div>
+      <p id="classicMonitorText">
+        Classic mode is live. Scores update as students submit correct answers.
+      </p>
+      <p id="classicQuestionCountText"></p>
+    </section>
+
+    <section id="battleRoyaleMonitorSection" class="page-card mode-section" hidden>
+      <div class="section-heading">
+        <h2>Battle Royale Monitor</h2>
+      </div>
+
+      <p id="battleRoundText"></p>
+      <p id="battlePhaseText"></p>
+      <p id="nextRoundCountdownText"></p>
+
+      <h3>Current Duels</h3>
+      <div id="duelsContainer" class="duels-grid"></div>
+
+      <h3>Eliminated Players</h3>
+      <ul id="eliminatedList"></ul>
+
+      <h3>Winner</h3>
+      <p id="battleWinnerText"></p>
+    </section>
+
+    <section id="tacticalDuelMonitorSection" class="page-card mode-section" hidden>
+      <div class="section-heading">
+        <h2>Tactical Duel Monitor</h2>
+      </div>
+
+      <p id="tacticalTimerText">Timer: --:--</p>
+      <p id="tacticalTurnText">Turn: --</p>
+      <p id="tacticalPhaseText">Phase: --</p>
+      <p id="tacticalActivePlayerText">Active Player: --</p>
+      <p id="tacticalWinnerText">Winner: Pending</p>
+
+      <div class="duels-grid">
+        <article class="monitor-card">
+          <h3 id="tacticalPlayer1Name">Player 1</h3>
+          <p id="tacticalPlayer1Hp">HP: --</p>
+          <p id="tacticalPlayer1Guard">Guard: --</p>
+          <p id="tacticalPlayer1Focus">Focus: --</p>
+          <p id="tacticalPlayer1Counter">Counter: --</p>
+        </article>
+
+        <article class="monitor-card">
+          <h3 id="tacticalPlayer2Name">Player 2</h3>
+          <p id="tacticalPlayer2Hp">HP: --</p>
+          <p id="tacticalPlayer2Guard">Guard: --</p>
+          <p id="tacticalPlayer2Focus">Focus: --</p>
+          <p id="tacticalPlayer2Counter">Counter: --</p>
+        </article>
+      </div>
+
+      <h3>Battle Log</h3>
+      <div id="tacticalBattleLog" class="log-list"></div>
+    </section>
+
+    <section class="page-card">
+      <div class="section-heading">
+        <h2>Session Actions</h2>
+      </div>
+      <div class="action-row">
+        <button id="endGameBtn" class="danger-btn">End Session</button>
+      </div>
+      <div id="monitorMessage" class="status-message" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <script src="guards.js"></script>
+  <script>
+    requireLecturerLogin();
+  </script>
+  <script src="monitoring.js"></script>
+</body>
+</html>

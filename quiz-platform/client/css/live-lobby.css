@@ -1,0 +1,11 @@
+.live-lobby-page .participants-list {
+  line-height: 1.6;
+}
+
+.live-lobby-page .page-card {
+  overflow: hidden;
+}
+
+.live-lobby-page .section-note {
+  max-width: 720px;
+}

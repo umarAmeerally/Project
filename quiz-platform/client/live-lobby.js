@@ -1,138 +1,67 @@
 const accessCode = localStorage.getItem("lecturerAccessCode");
 
+if (!accessCode) {
+  window.location.href = "lecturer-dashboard.html";
+}
+
 const accessCodeText = document.getElementById("accessCodeText");
+const gameModeText = document.getElementById("gameModeText");
 const participantsList = document.getElementById("participantsList");
 const startGameBtn = document.getElementById("startGameBtn");
-const messageDiv = document.getElementById("message");
-const endGameBtn = document.getElementById("endGameBtn");
-const classicControls = document.getElementById("classicControls");
-const battleControls = document.getElementById("battleControls");
 const startBattleBtn = document.getElementById("startBattleBtn");
+const startTacticalDuelBtn = document.getElementById("startTacticalDuelBtn");
+const endGameBtn = document.getElementById("endGameBtn");
+const messageDiv = document.getElementById("message");
 
-const battleRoundText = document.getElementById("battleRoundText");
-const battlePhaseText = document.getElementById("battlePhaseText");
-const eliminatedList = document.getElementById("eliminatedList");
-const battleWinnerText = document.getElementById("battleWinnerText");
-const duelsContainer = document.getElementById("duelsContainer");
-const nextRoundCountdownText = document.getElementById("nextRoundCountdownText");
-
-let nextRoundTimer = null;
-let isNextRoundTriggered = false;
+const classicLobbySection = document.getElementById("classicLobbySection");
+const battleRoyaleLobbySection = document.getElementById("battleRoyaleLobbySection");
+const tacticalDuelLobbySection = document.getElementById("tacticalDuelLobbySection");
 
 accessCodeText.textContent = `Session Code: ${accessCode}`;
 
-function updateControlVisibility(session) {
-  if (session.gameMode === "battleRoyale") {
-    classicControls.style.display = "none";
-    battleControls.style.display = "block";
-  } else {
-    classicControls.style.display = "block";
-    battleControls.style.display = "none";
+function setMessage(text, type = "") {
+  messageDiv.textContent = text;
+  messageDiv.className = type
+    ? `status-message ${type}`
+    : "status-message";
+}
+
+function hideAllModeSections() {
+  classicLobbySection.hidden = true;
+  battleRoyaleLobbySection.hidden = true;
+  tacticalDuelLobbySection.hidden = true;
+}
+
+function updateLobbyMode(session) {
+  hideAllModeSections();
+
+  gameModeText.textContent = `Mode: ${session.gameMode || "----"}`;
+
+  if (session.gameMode === "classic") {
+    classicLobbySection.hidden = false;
+  } else if (session.gameMode === "battleRoyale") {
+    battleRoyaleLobbySection.hidden = false;
+  } else if (session.gameMode === "tacticalDuel") {
+    tacticalDuelLobbySection.hidden = false;
   }
 }
 
-function updateBattleMonitor(session) {
-  if (session.gameMode !== "battleRoyale") {
-    battleRoundText.textContent = "";
-    battlePhaseText.textContent = "";
-    eliminatedList.innerHTML = "";
-    battleWinnerText.textContent = "";
-    duelsContainer.innerHTML = "";
+function renderParticipants(participants = []) {
+  participantsList.innerHTML = "";
+
+  if (!participants.length) {
+    const li = document.createElement("li");
+    li.textContent = "No students joined yet.";
+    participantsList.appendChild(li);
     return;
   }
 
-  battleRoundText.textContent = `Round: ${session.battleState.currentRound}`;
-  battlePhaseText.textContent = `Phase: ${session.battleState.phase}`;
-
-  eliminatedList.innerHTML = "";
-  session.battleState.eliminatedPlayers.forEach((player) => {
+  participants.forEach((participant) => {
     const li = document.createElement("li");
-    li.textContent = player;
-    eliminatedList.appendChild(li);
+    li.className = "participant-item";
+    li.textContent = participant.nickname;
+    participantsList.appendChild(li);
   });
-
-  battleWinnerText.textContent = session.battleState.winner
-    ? session.battleState.winner
-    : "No winner yet";
-
-  duelsContainer.innerHTML = "";
-
-  session.battleState.duels.forEach((duel, index) => {
-    const duelDiv = document.createElement("div");
-    duelDiv.style.border = "1px solid #ccc";
-    duelDiv.style.padding = "10px";
-    duelDiv.style.marginBottom = "10px";
-    duelDiv.style.borderRadius = "8px";
-    duelDiv.style.backgroundColor = "#f9f9f9";
-
-    if (duel.isBye) {
-      duelDiv.innerHTML = `
-        <strong>Duel ${index + 1}</strong><br>
-        ${duel.player1.nickname} gets a bye<br>
-        Winner: ${duel.winner || "Pending"}
-      `;
-    } else {
-      duelDiv.innerHTML = `
-        <strong>Duel ${index + 1}</strong><br>
-        ${duel.player1.nickname} vs ${duel.player2.nickname}<br>
-        ${duel.player1.nickname}: ${duel.player1.answered ? "Answered" : "Waiting"}<br>
-        ${duel.player2.nickname}: ${duel.player2.answered ? "Answered" : "Waiting"}<br>
-        Status: ${duel.status}<br>
-        Winner: ${duel.winner || "Pending"}
-      `;
-    }
-
-    duelsContainer.appendChild(duelDiv);
-  });
-}
-
-function handleAutoNextRound(session) {
-  if (session.gameMode !== "battleRoyale") return;
-
-  if (session.battleState.phase === "roundResults") {
-
-    // prevent multiple timers
-    if (isNextRoundTriggered) return;
-
-    isNextRoundTriggered = true;
-
-    let countdown = 5;
-
-    nextRoundCountdownText.textContent = `Next round starts in ${countdown} seconds...`;
-
-    nextRoundTimer = setInterval(async () => {
-      countdown--;
-
-      nextRoundCountdownText.textContent = `Next round starts in ${countdown} seconds...`;
-
-      if (countdown <= 0) {
-        clearInterval(nextRoundTimer);
-        nextRoundCountdownText.textContent = "Starting next round...";
-
-        try {
-          await fetch(`/api/sessions/${accessCode}/next-round`, {
-            method: "POST"
-          });
-        } catch (error) {
-          console.error("Error starting next round:", error);
-        }
-
-        isNextRoundTriggered = false;
-      }
-
-    }, 1000);
-
-  }
-
-  // reset flag when new round begins
-  if (session.battleState.phase === "question") {
-    nextRoundCountdownText.textContent = "";
-    isNextRoundTriggered = false;
-  }
-
-  if (session.battleState.phase === "finished") {
-    nextRoundCountdownText.textContent = "";
-  }
 }
 
 async function loadLobby() {
@@ -141,30 +70,25 @@ async function loadLobby() {
     const data = await response.json();
 
     if (!response.ok) {
-      messageDiv.textContent = "Session not found.";
-      messageDiv.style.color = "red";
+      setMessage(data.message || "Session not found.", "error");
       return;
     }
 
-    updateControlVisibility(data);
-    updateBattleMonitor(data);
-    handleAutoNextRound(data);
-
-    participantsList.innerHTML = "";
-
-    data.participants.forEach((participant) => {
-      const li = document.createElement("li");
-      li.textContent = participant.nickname;
-      participantsList.appendChild(li);
-    });
-
-    if (data.status === "live" && data.gameMode === "classic") {
-      window.location.href = "lecturer-results.html";
+    if (data.status === "live") {
+      window.location.href = "monitoring.html";
+      return;
     }
+
+    if (data.status === "ended") {
+      window.location.href = "lecturer-results.html";
+      return;
+    }
+
+    updateLobbyMode(data);
+    renderParticipants(data.participants || []);
   } catch (error) {
-    console.error(error);
-    messageDiv.textContent = "Error loading lobby.";
-    messageDiv.style.color = "red";
+    console.error("Load lobby error:", error);
+    setMessage("Error loading lobby.", "error");
   }
 }
 
@@ -180,17 +104,16 @@ startGameBtn.addEventListener("click", async () => {
 
     const data = await response.json();
 
-    if (response.ok) {
-      messageDiv.textContent = "Game started!";
-      messageDiv.style.color = "green";
-    } else {
-      messageDiv.textContent = data.message || "Could not start game.";
-      messageDiv.style.color = "red";
+    if (!response.ok) {
+      setMessage(data.message || "Could not start game.", "error");
+      return;
     }
+
+    setMessage("Classic session started.", "success");
+    window.location.href = "monitoring.html";
   } catch (error) {
-    console.error(error);
-    messageDiv.textContent = "Server error.";
-    messageDiv.style.color = "red";
+    console.error("Start classic error:", error);
+    setMessage("Server error while starting classic session.", "error");
   }
 });
 
@@ -202,17 +125,37 @@ startBattleBtn.addEventListener("click", async () => {
 
     const data = await response.json();
 
-    if (response.ok) {
-      messageDiv.textContent = "Battle Royale started!";
-      messageDiv.style.color = "green";
-    } else {
-      messageDiv.textContent = data.message || "Could not start battle royale.";
-      messageDiv.style.color = "red";
+    if (!response.ok) {
+      setMessage(data.message || "Could not start Battle Royale.", "error");
+      return;
     }
+
+    setMessage("Battle Royale started.", "success");
+    window.location.href = "monitoring.html";
   } catch (error) {
-    console.error(error);
-    messageDiv.textContent = "Server error while starting battle royale.";
-    messageDiv.style.color = "red";
+    console.error("Start battle error:", error);
+    setMessage("Server error while starting Battle Royale.", "error");
+  }
+});
+
+startTacticalDuelBtn.addEventListener("click", async () => {
+  try {
+    const response = await fetch(`/api/sessions/${accessCode}/start-tactical-duel`, {
+      method: "POST"
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      setMessage(data.message || "Could not start Tactical Duel.", "error");
+      return;
+    }
+
+    setMessage("Tactical Duel started.", "success");
+    window.location.href = "monitoring.html";
+  } catch (error) {
+    console.error("Start tactical duel error:", error);
+    setMessage("Server error while starting Tactical Duel.", "error");
   }
 });
 
@@ -228,18 +171,16 @@ endGameBtn.addEventListener("click", async () => {
 
     const data = await response.json();
 
-    if (response.ok) {
-      messageDiv.textContent = "Session ended.";
-      messageDiv.style.color = "green";
-      window.location.href = "lecturer-results.html";
-    } else {
-      messageDiv.textContent = data.message || "Could not end session.";
-      messageDiv.style.color = "red";
+    if (!response.ok) {
+      setMessage(data.message || "Could not end session.", "error");
+      return;
     }
+
+    setMessage("Session ended.", "success");
+    window.location.href = "lecturer-results.html";
   } catch (error) {
-    console.error(error);
-    messageDiv.textContent = "Server error while ending session.";
-    messageDiv.style.color = "red";
+    console.error("End session error:", error);
+    setMessage("Server error while ending session.", "error");
   }
 });
 

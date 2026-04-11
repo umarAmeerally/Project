@@ -2,26 +2,83 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Join Session</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="css/ui-theme.css" />
+  <link rel="stylesheet" href="css/join-session.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>Join Quiz Session</h1>
+  <main class="join-session-page">
+    <div class="join-shell">
+      <section class="page-card">
+        <p class="section-eyebrow">Student Access</p>
+        <h1>Join a Session</h1>
+        <p class="page-subtitle">
+          Enter the session code given by your lecturer and choose a nickname to join the live game.
+        </p>
 
-    <form id="joinForm">
-      <label for="accessCode">Session Code</label>
-      <input type="text" id="accessCode" placeholder="Enter session code" required />
+        <form id="joinForm" class="form-stack">
+          <div class="form-row">
+            <label for="accessCode">Session Code</label>
+            <input
+              type="text"
+              id="accessCode"
+              placeholder="Enter session code"
+              maxlength="6"
+              required
+            />
+          </div>
 
-      <label for="nickname">Nickname</label>
-      <input type="text" id="nickname" placeholder="Enter your nickname" required />
+          <div class="form-row">
+            <label for="nickname">Nickname</label>
+            <input
+              type="text"
+              id="nickname"
+              placeholder="Choose your nickname"
+              required
+            />
+          </div>
 
-      <button type="submit">Join Session</button>
-    </form>
+          <div class="action-row">
+            <button type="submit" class="primary-btn">Join Session</button>
+          </div>
+        </form>
 
-    <div id="message"></div>
-  </div>
+        <div id="message" class="status-message" aria-live="polite"></div>
+      </section>
+
+      <section class="page-card">
+        <p class="section-eyebrow">Before You Join</p>
+        <h2>What happens next</h2>
+        <p class="helper-text">
+          Once you join, you will wait in the session room until the lecturer starts the game.
+        </p>
+
+        <ul class="info-list">
+          <li class="info-item">
+            <strong>Classic Mode</strong>
+            <span>You answer the quiz normally and receive your result at the end.</span>
+          </li>
+
+          <li class="info-item">
+            <strong>Battle Royale</strong>
+            <span>You compete across elimination rounds until one winner remains.</span>
+          </li>
+
+          <li class="info-item">
+            <strong>Tactical Duel</strong>
+            <span>A focused 2-player tactical match with actions, HP, and timed decisions.</span>
+          </li>
+
+          <li class="info-item">
+            <strong>Important</strong>
+            <span>Your nickname must be unique within the session.</span>
+          </li>
+        </ul>
+      </section>
+    </div>
+  </main>
 
   <script src="join-session.js"></script>
 </body>
