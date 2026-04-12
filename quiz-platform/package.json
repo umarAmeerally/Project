@@ -6,7 +6,8 @@
   "scripts": {
   "start": "node server/app.js",
   "dev": "nodemon server/app.js",
-  "seed": "node server/seed.js"
+  "create-lecturer": "node server/createLecturer.js",
+  "create-sample-quiz": "node server/createSampleQuiz.js"
 },
   "keywords": [],
   "author": "",
